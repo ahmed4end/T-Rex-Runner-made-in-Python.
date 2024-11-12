@@ -9,11 +9,23 @@ import time
 pygame.init()
 speed = 4
 
+#adding score and counter 
+score = 0
+counter = 0
 
+#gameover variable
+game_over = False
+
+
+#adding font
+
+pygame.font.init()
+font = pygame.font.SysFont('Arial', 20)
 
 # extracting game items and characters form the resource.png image.
 player_init = Image.open("resources.png").crop((77,5,163,96)).convert("RGBA")
 player_init = player_init.resize(list(map(lambda x:x//2 , player_init.size)))
+
 
 player_frame_1 = Image.open("resources.png").crop((1679,2,1765,95)).convert("RGBA")
 player_frame_1 = player_frame_1.resize(list(map(lambda x:x//2 , player_frame_1.size)))
@@ -97,13 +109,19 @@ if obast2 in [obstacle4, obstacle5, obstacle6]:obs2 = (obs2[0], 115)
 obast3 = choice(obstacles)
 if obast3 in [obstacle4, obstacle5, obstacle6]:obs3 = (obs3[0], 115)
 
+score,counter=0,0 
 while not crashed:
     gameDisplay.fill((255,255,255))
+    
+    counter += 1
+    if counter % 10 == 0:
+        score += 1
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             crashed = True
         if event.type==pygame.KEYDOWN:
             start = True
+            
             if event.key == pygame.K_DOWN:
                 slow_motion = True
                 state = crouch
@@ -145,6 +163,7 @@ while not crashed:
     gameDisplay.blit(pygame.image.fromstring(obast1.tobytes(), obast1.size, 'RGBA'), obs1)
     gameDisplay.blit(pygame.image.fromstring(obast2.tobytes(), obast2.size, 'RGBA'), obs2)
     gameDisplay.blit(pygame.image.fromstring(obast3.tobytes(), obast3.size, 'RGBA'), obs3)
+    
     if obs1[0]<=-50:
         obs1 = (rnd(600, 600+500), 130)
         obast1 = choice(obstacles)
@@ -161,6 +180,7 @@ while not crashed:
     if height< 100:
         start=True
     if start:
+
         obs1 = (obs1[0]-speed, obs1[1])
         obs2 = (obs2[0]-speed, obs2[1])
         obs3 = (obs3[0]-speed, obs3[1])
@@ -182,12 +202,18 @@ while not crashed:
 
         if obs1_cub[0]<=player_stading_cub[2]-10<=obs1_cub[2] and obs1_cub[1]<=player_stading_cub[3]-10<=obs1_cub[3]-5:
             start=False
+            crashed=True
             state = player_frame_4
         if obs2_cub[0]<=player_stading_cub[2]-10<=obs2_cub[2] and obs2_cub[1]<=player_stading_cub[3]-10<=obs2_cub[3]-5:
             start=False
+            crashed=True
             state = player_frame_4
         if obs3_cub[0]<=player_stading_cub[2]-10<=obs3_cub[2] and obs3_cub[1]<=player_stading_cub[3]-10<=obs3_cub[3]-5:
             start=False
+            crashed=True
             state = player_frame_4
+
+    score_text = font.render(f'Score: {score}', True, (0, 0, 0))
+    gameDisplay.blit(score_text, (500, 10))   
     pygame.display.update()
-    clock.tick(120)
+    clock.tick(60)
